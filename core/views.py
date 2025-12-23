@@ -9,3 +9,6 @@ def signin(request):
 
 def profile(request):
     return render(request, 'profile.html')
+
+def profile_edit(request):
+    return render(request, 'profile_edit.html')
