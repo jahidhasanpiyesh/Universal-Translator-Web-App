@@ -1,15 +1,36 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Signup Page</title>
+    <title>Login & Signup - Universal Translator</title>
     <link rel="stylesheet" href="{% static 'signin.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .hidden { display: none; }
+    </style>
 </head>
+
 <body>
 
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+            <script>
+                Swal.fire({
+                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
+                    title: "{{ message }}",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000
+                });
+            </script>
+            {% endfor %}
+        {% endif %}
+
         <div class="tab-container">
             <button id="loginBtn" class="tab-btn active" onclick="switchForm('login')">Login</button>
             <button id="signupBtn" class="tab-btn" onclick="switchForm('signup')">Sign Up</button>
@@ -17,14 +38,16 @@
 
         <div id="loginForm" class="form-box">
             <h2>Welcome Back</h2>
-            <form>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="login">
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" placeholder="Enter your email" required>
+                    <input type="email" name="email" placeholder="Enter your email" required>
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" placeholder="Enter password" required>
+                    <input type="password" name="password" placeholder="Enter password" required>
                 </div>
                 <button type="submit" class="submit-btn login-bg">Login</button>
             </form>
@@ -33,19 +56,27 @@
 
         <div id="signupForm" class="form-box hidden">
             <h2>Create Account</h2>
-            <form>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="signup">
+                
                 <div class="input-group">
                     <label>Full Name</label>
-                    <input type="text" placeholder="John Doe" required>
+                    <input type="text" name="full_name" placeholder="John Doe" required>
                 </div>
                 <div class="input-group">
                     <label>Email</label>
-                    <input type="email" placeholder="your@email.com" required>
+                    <input type="email" name="email" placeholder="your@email.com" required>
                 </div>
                 <div class="input-group">
                     <label>Password</label>
-                    <input type="password" placeholder="Create password" required>
+                    <input type="password" name="password" placeholder="Create password" required>
                 </div>
+                <div class="input-group">
+                    <label>Confirm Password</label>
+                    <input type="password" name="re_password" placeholder="Retype password" required>
+                </div>
+
                 <button type="submit" class="submit-btn signup-bg">Sign Up</button>
             </form>
         </div>
