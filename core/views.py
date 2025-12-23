@@ -46,13 +46,17 @@ def signin(request):
 
             if user is not None:
                 login(request, user)
+                messages.success(request, 'Logged in successfully!')
                 return redirect('home')
             else:
                 messages.error(request, 'Invalid email or password!')
 
     return render(request, 'signin.html')
 
-
+def signout(request):
+    logout(request)
+    messages.success(request, 'Logged out succesfully!')
+    return redirect('home')
 def profile(request):
     return render(request, 'profile.html')
 
