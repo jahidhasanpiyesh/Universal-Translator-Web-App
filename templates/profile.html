@@ -19,8 +19,8 @@
 
         <div class="profile-header">
             <div class="avatar-circle">J</div>
-            <h2 class="user-name">John Doe</h2>
-            <div class="user-email-top">johndoe@email.com</div>
+            <h2 class="user-name">{{user.first_name}}</h2>
+            <div class="user-email-top">{{user.email}}</div>
         </div>
 
         <div class="info-section">
@@ -28,14 +28,14 @@
             <div class="info-field">
                 <span class="label">Full Name</span>
                 <div class="value-wrapper">
-                    <span class="value">John Doe</span>
+                    <span class="value">{{user.first_name}}</span>
                 </div>
             </div>
 
             <div class="info-field">
                 <span class="label">Email Address</span>
                 <div class="value-wrapper">
-                    <span class="value">johndoe@email.com</span>
+                    <span class="value">{{user.email}}</span>
                     <i class="fa-solid fa-circle-check verified-icon"></i>
                 </div>
             </div>
@@ -43,7 +43,7 @@
             <div class="info-field">
                 <span class="label">Password</span>
                 <div class="value-wrapper">
-                    <span class="value">******</span>
+                    <span class="value">********</span>
                 </div>
             </div>
 
