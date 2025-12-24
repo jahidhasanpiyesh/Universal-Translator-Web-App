@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
 
@@ -67,4 +68,43 @@ def profile(request):
 
 @login_required
 def profile_edit(request):
+    user = request.user
+    
+    if request.method == "POST":
+        # টেমপ্লেটের name="..." অনুযায়ী ডাটা নেওয়া
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+
+        # ভ্যালিডেশন: নাম বা ইমেইল কোনোভাবেই যেন খালি না থাকে
+        if not full_name or not email:
+            messages.error(request, 'Full Name and Email are required!')
+            return render(request, 'profile_edit.html')
+
+        user.first_name = full_name
+        user.email = email
+        user.username = email  # আপনি ইমেইলকে ইউজারনেম হিসেবে ব্যবহার করছেন
+
+        # পাসওয়ার্ড পরিবর্তনের লজিক
+        current_pass = request.POST.get('current_password')
+        new_pass = request.POST.get('new_password')
+
+        if current_pass and new_pass:
+            if user.check_password(current_pass):
+                user.set_password(new_pass)
+                user.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Profile and Password updated successfully!')
+            else:
+                messages.error(request, 'Current password was incorrect!')
+                return render(request, 'profile_edit.html')
+        else:
+            try:
+                user.save()
+                messages.success(request, 'Profile updated successfully!')
+            except Exception as e:
+                messages.error(request, f'This email/username is already in use!')
+                return render(request, 'profile_edit.html')
+
+        return redirect('profile')
+
     return render(request, 'profile_edit.html')
