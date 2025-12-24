@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'profile_edit.css'%}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -38,11 +47,19 @@
         <form action="{% url 'profile_edit' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="avatar-edit">
-                <div class="avatar-preview" id="preview">{{ user.first_name|first|upper }}</div>
+                <div class="avatar-preview" id="preview">
+                    {% if user.profile.image %}
+                        <img src="{{ user.profile.image.url }}" id="img-view">
+                    {% else %}
+                        <span id="initial-text">{{ user.first_name|first|upper }}</span>
+                        <img src="" id="img-view" style="display: none;">
+                    {% endif %}
+                </div>
+                
                 <label for="file-upload" class="upload-icon">
                     <i class="fa-solid fa-camera"></i>
                 </label>
-                <input id="file-upload" name="profile_pic" type="file" style="display:none;" />
+                <input id="file-upload" name="profile_pic" type="file" style="display:none;" accept="image/*" onchange="previewFile()" />
             </div>
 
             <div class="form-group">
@@ -76,6 +93,25 @@
         </form>
     </div>
 
-</body>
+    <script>
+        function previewFile() {
+            const preview = document.getElementById('img-view');
+            const initialText = document.getElementById('initial-text');
+            const file = document.getElementById('file-upload').files[0];
+            const reader = new FileReader();
 
+            reader.onloadend = function () {
+                preview.src = reader.result;
+                preview.style.display = 'block'; 
+                if (initialText) {
+                    initialText.style.display = 'none'; 
+                }
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
 </html>

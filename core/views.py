@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
+from .models import UserProfile
 
 # Create your views here.
 
@@ -69,22 +70,30 @@ def profile(request):
 @login_required
 def profile_edit(request):
     user = request.user
+    # OneToOneField এর কারণে user.profile সরাসরি পাওয়া যাবে
+    # যদি প্রোফাইল না থাকে তবে তৈরি হবে
+    profile, created = UserProfile.objects.get_or_create(user=user)
     
     if request.method == "POST":
-        # টেমপ্লেটের name="..." অনুযায়ী ডাটা নেওয়া
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
+        profile_pic = request.FILES.get('profile_pic')
 
-        # ভ্যালিডেশন: নাম বা ইমেইল কোনোভাবেই যেন খালি না থাকে
         if not full_name or not email:
             messages.error(request, 'Full Name and Email are required!')
             return render(request, 'profile_edit.html')
 
+        # ১. ইউজারের বেসিক তথ্য আপডেট
         user.first_name = full_name
         user.email = email
-        user.username = email  # আপনি ইমেইলকে ইউজারনেম হিসেবে ব্যবহার করছেন
+        user.username = email 
 
-        # পাসওয়ার্ড পরিবর্তনের লজিক
+        # ২. ফটো আপডেট লজিক (এটি এখন প্রোফাইল মডেলে সেভ হবে)
+        if profile_pic:
+            profile.image = profile_pic
+            profile.save() # প্রোফাইল অবজেক্টটি আগে সেভ করা ভালো
+
+        # ৩. পাসওয়ার্ড পরিবর্তনের লজিক
         current_pass = request.POST.get('current_password')
         new_pass = request.POST.get('new_password')
 
@@ -99,10 +108,10 @@ def profile_edit(request):
                 return render(request, 'profile_edit.html')
         else:
             try:
-                user.save()
+                user.save() # ইউজারের নাম ও ইমেল সেভ
                 messages.success(request, 'Profile updated successfully!')
             except Exception as e:
-                messages.error(request, f'This email/username is already in use!')
+                messages.error(request, 'This email/username is already in use!')
                 return render(request, 'profile_edit.html')
 
         return redirect('profile')
