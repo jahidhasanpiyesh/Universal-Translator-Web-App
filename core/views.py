@@ -70,8 +70,8 @@ def profile(request):
 @login_required
 def profile_edit(request):
     user = request.user
-    # OneToOneField এর কারণে user.profile সরাসরি পাওয়া যাবে
-    # যদি প্রোফাইল না থাকে তবে তৈরি হবে
+    # OneToOneField relationship to get or create user profile
+    # This assumes UserProfile model has a OneToOneField to User
     profile, created = UserProfile.objects.get_or_create(user=user)
     
     if request.method == "POST":
@@ -83,17 +83,17 @@ def profile_edit(request):
             messages.error(request, 'Full Name and Email are required!')
             return render(request, 'profile_edit.html')
 
-        # ১. ইউজারের বেসিক তথ্য আপডেট
+        # Update User fields
         user.first_name = full_name
         user.email = email
         user.username = email 
 
-        # ২. ফটো আপডেট লজিক (এটি এখন প্রোফাইল মডেলে সেভ হবে)
+        # Update profile picture if provided
         if profile_pic:
             profile.image = profile_pic
-            profile.save() # প্রোফাইল অবজেক্টটি আগে সেভ করা ভালো
+            profile.save() # Save profile changes
 
-        # ৩. পাসওয়ার্ড পরিবর্তনের লজিক
+        # Handle password change if fields are filled
         current_pass = request.POST.get('current_password')
         new_pass = request.POST.get('new_password')
 
@@ -108,7 +108,7 @@ def profile_edit(request):
                 return render(request, 'profile_edit.html')
         else:
             try:
-                user.save() # ইউজারের নাম ও ইমেল সেভ
+                user.save() 
                 messages.success(request, 'Profile updated successfully!')
             except Exception as e:
                 messages.error(request, 'This email/username is already in use!')
