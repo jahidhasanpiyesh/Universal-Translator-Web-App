@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="en">
+{% load i18n %} <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Translator - Design Preview</title>
+    <title>{% trans "Universal Translator - Design Preview" %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="{% static 'style.css' %}">
@@ -33,7 +33,7 @@
             top: 40px;
             left: 0;
             background-color: #ffffff;
-            min-width: 160px;
+            min-width: 200px;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -42,7 +42,7 @@
         }
 
         .dropdown-panel a {
-            color: #000000 !important; /* Pure Black Text */
+            color: #000000 !important;
             padding: 12px 16px;
             text-decoration: none;
             display: block;
@@ -65,11 +65,14 @@
             display: block !important;
         }
 
-        /* Header Alignments */
         .logo-area {
             display: flex;
             align-items: center;
         }
+
+        /* Language Switcher styling */
+        .lang-form { padding: 10px 16px; }
+        .lang-form select { border: 1px solid #ccc; border-radius: 4px; padding: 2px 5px; width: 100%; font-size: 13px; }
     </style>
 </head>
 
@@ -102,24 +105,40 @@
                 </button>
                 
                 <div id="userMenu" class="dropdown-panel">
+                    <div class="lang-form">
+                        <small class="text-muted">{% trans "Site Language" %}:</small>
+                        <form action="{% url 'set_language' %}" method="post">
+                            {% csrf_token %}
+                            <select name="language" onchange="this.form.submit()">
+                                {% get_current_language as CURRENT_LANG %}
+                                {% get_available_languages as ALL_LANGS %}
+                                {% for lang_code, lang_name in ALL_LANGS %}
+                                    <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANG %}selected{% endif %}>
+                                        {{ lang_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                    <div class="menu-divider"></div>
+
                     {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}">Profile</a>
+                    <a href="{% url 'profile' %}">{% trans "Profile" %}</a>
                     <div class="menu-divider"></div>
                     {% endif %}
                     
-                    <a href="#">About Universal Translator</a>
-                    <a href="#">Privacy & Terms</a>
-                    <a href="#">Help</a>
+                    <a href="#">{% trans "About Universal Translator" %}</a>
+                    <a href="#">{% trans "Privacy & Terms" %}</a>
+                    <a href="#">{% trans "Help" %}</a>
                     
                     {% if user.is_authenticated %}
-                    <a href="{% url 'signout' %}">Logout</a>
+                    <a href="{% url 'signout' %}">{% trans "Logout" %}</a>
                     {% else %}
-                    <a href="{% url 'signin' %}">Sign In</a>
+                    <a href="{% url 'signin' %}">{% trans "Sign In" %}</a>
                     {% endif %}
-
                 </div>
             </div>
-            <h1>Universal Translator</h1>
+            <h1>{% trans "Universal Translator" %}</h1>
         </div>
     </header>
 
@@ -128,55 +147,116 @@
 
             <div class="pane input-pane">
                 <div class="pane-header">
-                    <span class="active-tab">Detect Language</span>
+                    <span class="active-tab">{% trans "Detect Language" %}</span>
                 </div>
-                <textarea class="text-input" placeholder="Type text to translate..."></textarea>
+                <textarea class="text-input" placeholder="{% trans 'Type text to translate...' %}"></textarea>
             </div>
 
             <div class="pane output-pane">
                 <div class="pane-header">
                     <select class="language-select">
-                        <option value="en">English</option>
-                        <option value="bn" selected>Bengali</option>
-                        <option value="es">Spanish</option>
-                        <option value="fr">French</option>
+                        {% for code, name in languages.items %}
+                        <option value="{{ code }}" {% if code == 'bn' %}selected{% endif %}>
+                        {{ name }}
+                        </option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="text-output">
-                    <span class="placeholder-text">Translation results will appear here</span>
+                    <span class="placeholder-text">{% trans "Translation results will appear here" %}</span>
                 </div>
             </div>
 
         </div>
 
-        <div class="button-container">
-            <button class="btn-translate">Translate</button>
-        </div>
+
 
         <footer class="app-info">
             <p>
+                {% blocktrans %}
                 <strong>Universal Translator</strong> is a powerful web app built with <strong>Django</strong> and
-                <strong>Python</strong>. It provides instant, accurate text translation across <strong>100+
-                    languages</strong> using the Google Translate API. Fast, secure, and reliable—your go-to tool for
-                breaking language barriers.
+                <strong>Python</strong>. It provides instant, accurate text translation across 100+ languages using the Google Translate API.
+                {% endblocktrans %}
             </p>
         </footer>
     </main>
 
     <script>
+        // ১. মেনু টগল ফাংশন (আগের মতোই থাকবে)
         function toggleMenu(event) {
             event.stopPropagation();
             const menu = document.getElementById("userMenu");
             menu.classList.toggle("show-dropdown");
         }
 
-        // Baire click korle jeno menu bondho hoye jay
         window.onclick = function(event) {
             const menu = document.getElementById("userMenu");
-            if (menu.classList.contains('show-dropdown')) {
-                menu.classList.remove('show-dropdown');
+            if (!event.target.closest('.user-menu-wrapper')) {
+                if (menu.classList.contains('show-dropdown')) {
+                    menu.classList.remove('show-dropdown');
+                }
             }
         }
+
+        // ২. অটোমেটিক অনুবাদ লজিক (আপডেটেড)
+        const inputArea = document.querySelector('.text-input');
+        const targetSelect = document.querySelector('.language-select');
+        const outputArea = document.querySelector('.text-output');
+        const translateBtn = document.querySelector('.btn-translate'); // বাটন ক্লিকও কাজ করবে
+
+        function performTranslation() {
+            const text = inputArea.value.trim();
+            const targetLang = targetSelect.value;
+
+            // ইনপুট খালি থাকলে আউটপুট ক্লিয়ার করে দেবে
+            if (!text) {
+                outputArea.innerHTML = '<span class="placeholder-text">{% trans "Translation results will appear here" %}</span>';
+                return;
+            }
+
+            // লোডিং বোঝাতে অপাসিটি কমানো
+            outputArea.style.opacity = '0.5';
+
+            fetch('/translate-api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    'text': text,
+                    'target': targetLang
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputArea.style.opacity = '1'; // কাজ শেষ হলে উজ্জ্বল হবে
+                if (data.translated_text) {
+                    outputArea.innerHTML = `<span style="color: #000;">${data.translated_text}</span>`;
+                } else {
+                    outputArea.innerHTML = '<span>{% trans "Error in translation" %}</span>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                outputArea.style.opacity = '1';
+                outputArea.innerHTML = '<span>{% trans "Service Unavailable" %}</span>';
+            });
+        }
+
+        // টাইপিং ডিলে সেট করা (Debounce)
+        let timeout = null;
+        inputArea.addEventListener('input', function() {
+            clearTimeout(timeout);
+            // ইউজার টাইপিং থামানোর ৫০০ মিলিসেকেন্ড পর অনুবাদ শুরু হবে
+            timeout = setTimeout(performTranslation, 500);
+        });
+
+        // ড্রপডাউন পরিবর্তন করলে সাথে সাথে অনুবাদ হবে
+        targetSelect.addEventListener('change', performTranslation);
+
+        // বাটন ক্লিকের মাধ্যমেও চাইলে অনুবাদ করা যাবে
+        translateBtn.addEventListener('click', performTranslation);
     </script>
 
 </body>

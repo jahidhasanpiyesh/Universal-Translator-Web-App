@@ -6,10 +6,57 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from .models import UserProfile
 
+
+import json
+from django.http import JsonResponse
+from deep_translator import GoogleTranslator
 # Create your views here.
 
+
 def home(request):
-    return render(request, 'index.html')
+    languages_list = {
+        'af': 'Afrikaans', 'sq': 'Albanian', 'ar': 'Arabic', 'hy': 'Armenian', 'az': 'Azerbaijani',
+        'eu': 'Basque', 'be': 'Belarusian', 'bn': 'Bengali', 'bs': 'Bosnian', 'bg': 'Bulgarian',
+        'ca': 'Catalan', 'ceb': 'Cebuano', 'ny': 'Chichewa', 'zh-CN': 'Chinese (Simplified)',
+        'hr': 'Croatian', 'cs': 'Czech', 'da': 'Danish', 'nl': 'Dutch', 'en': 'English',
+        'eo': 'Esperanto', 'et': 'Estonian', 'tl': 'Filipino', 'fi': 'Finnish', 'fr': 'French',
+        'gl': 'Galician', 'ka': 'Georgian', 'de': 'German', 'el': 'Greek', 'gu': 'Gujarati',
+        'ht': 'Haitian Creole', 'ha': 'Hausa', 'iw': 'Hebrew', 'hi': 'Hindi', 'hmn': 'Hmong',
+        'hu': 'Hungarian', 'is': 'Icelandic', 'ig': 'Igbo', 'id': 'Indonesian', 'ga': 'Irish',
+        'it': 'Italian', 'ja': 'Japanese', 'jw': 'Javanese', 'kn': 'Kannada', 'kk': 'Kazakh',
+        'km': 'Khmer', 'ko': 'Korean', 'lo': 'Lao', 'la': 'Latin', 'lv': 'Latvian',
+        'lt': 'Lithuanian', 'mk': 'Macedonian', 'mg': 'Malagasy', 'ms': 'Malay', 'ml': 'Malayalam',
+        'mt': 'Maltese', 'mi': 'Maori', 'mr': 'Marathi', 'mn': 'Mongolian', 'my': 'Myanmar (Burmese)',
+        'ne': 'Nepali', 'no': 'Norwegian', 'ps': 'Pashto', 'fa': 'Persian', 'pl': 'Polish',
+        'pt': 'Portuguese', 'pa': 'Punjabi', 'ro': 'Romanian', 'ru': 'Russian', 'sm': 'Samoan',
+        'gd': 'Scots Gaelic', 'sr': 'Serbian', 'st': 'Sesotho', 'sn': 'Shona', 'sd': 'Sindhi',
+        'si': 'Sinhala', 'sk': 'Slovak', 'sl': 'Slovenian', 'so': 'Somali', 'es': 'Spanish',
+        'su': 'Sundanese', 'sw': 'Swahili', 'sv': 'Swedish', 'tg': 'Tajik', 'ta': 'Tamil',
+        'te': 'Telugu', 'th': 'Thai', 'tr': 'Turkish', 'uk': 'Ukrainian', 'ur': 'Urdu',
+        'uz': 'Uzbek', 'vi': 'Vietnamese', 'cy': 'Welsh', 'xh': 'Xhosa', 'yi': 'Yiddish',
+        'yo': 'Yoruba', 'zu': 'Zulu'
+    }
+
+    return render(request, 'index.html', {'languages': languages_list})
+
+
+def translate_text(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user_text = data.get('text')
+            target_lang = data.get('target')
+
+            # অনুবাদ করার আসল কোড
+            translated = GoogleTranslator(
+                source='auto', target=target_lang).translate(user_text)
+
+            return JsonResponse({'translated_text': translated})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 # Signin view handling both signup and login
 def signin(request):
@@ -57,15 +104,18 @@ def signin(request):
 
     return render(request, 'signin.html')
 
+
 @login_required
 def signout(request):
     logout(request)
     messages.success(request, 'Logged out succesfully!')
     return redirect('home')
 
+
 @login_required
 def profile(request):
     return render(request, 'profile.html')
+
 
 @login_required
 def profile_edit(request):
@@ -73,7 +123,7 @@ def profile_edit(request):
     # OneToOneField relationship to get or create user profile
     # This assumes UserProfile model has a OneToOneField to User
     profile, created = UserProfile.objects.get_or_create(user=user)
-    
+
     if request.method == "POST":
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
@@ -86,12 +136,12 @@ def profile_edit(request):
         # Update User fields
         user.first_name = full_name
         user.email = email
-        user.username = email 
+        user.username = email
 
         # Update profile picture if provided
         if profile_pic:
             profile.image = profile_pic
-            profile.save() # Save profile changes
+            profile.save()  # Save profile changes
 
         # Handle password change if fields are filled
         current_pass = request.POST.get('current_password')
@@ -102,16 +152,18 @@ def profile_edit(request):
                 user.set_password(new_pass)
                 user.save()
                 update_session_auth_hash(request, user)
-                messages.success(request, 'Profile and Password updated successfully!')
+                messages.success(
+                    request, 'Profile and Password updated successfully!')
             else:
                 messages.error(request, 'Current password was incorrect!')
                 return render(request, 'profile_edit.html')
         else:
             try:
-                user.save() 
+                user.save()
                 messages.success(request, 'Profile updated successfully!')
             except Exception as e:
-                messages.error(request, 'This email/username is already in use!')
+                messages.error(
+                    request, 'This email/username is already in use!')
                 return render(request, 'profile_edit.html')
 
         return redirect('profile')
