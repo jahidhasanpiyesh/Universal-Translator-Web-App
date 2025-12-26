@@ -1,45 +1,34 @@
-/* Color Variables */
 :root {
     --google-blue: #1a73e8;
     --border-color: #dadce0;
     --text-main: #3c4043;
-    --text-sub: #5f6368;
     --bg-light: #f8f9fa;
 }
 
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
 }
 
-/* Header Styling */
 .translator-header {
     padding: 12px 25px;
     border-bottom: 1px solid var(--border-color);
-}
-
-.logo-area {
     display: flex;
     align-items: center;
 }
 
 .logo-area h1 {
     font-size: 22px;
-    margin: 0 0 0 12px;
-    color: var(--text-sub);
+    color: #5f6368;
     font-weight: 400;
+    margin: 0;
 }
 
-/* Main Box Styling */
 .translator-card {
     display: flex;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     min-height: 280px;
-    overflow: hidden;
 }
 
 .pane {
@@ -49,15 +38,14 @@ body {
 }
 
 .input-pane {
-    background: #fff;
     border-right: 1px solid var(--border-color);
+    background: #fff;
 }
 
 .output-pane {
     background: var(--bg-light);
 }
 
-/* Pane Header & Select */
 .pane-header {
     padding: 10px 15px;
     border-bottom: 1px solid var(--border-color);
@@ -67,78 +55,30 @@ body {
     color: var(--google-blue);
     font-weight: 500;
     border-bottom: 2px solid var(--google-blue);
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 }
 
-.language-select {
-    border: none;
-    background: transparent;
-    color: var(--google-blue);
-    font-weight: 500;
-    outline: none;
-    cursor: pointer;
-}
-
-/* Text Inputs/Outputs */
 .text-input {
     width: 100%;
     height: 100%;
     border: none;
     padding: 20px;
-    font-size: 24px;
+    font-size: 22px;
     resize: none;
     outline: none;
 }
 
 .text-output {
     padding: 20px;
-    font-size: 24px;
+    font-size: 22px;
     color: var(--text-main);
 }
 
-.placeholder-text {
-    color: #9aa0a6;
-}
-
-/* Button */
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 15px;
-}
-
-.btn-translate {
-    background-color: var(--google-blue);
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 4px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.btn-translate:hover {
-    background-color: #1765cc;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-/* Footer Description */
-.app-info {
-    margin-top: 60px;
-    text-align: center;
-    color: var(--text-sub);
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-}
-
-/* Responsive Fix */
 @media (max-width: 768px) {
     .translator-card {
         flex-direction: column;
     }
+
     .input-pane {
         border-right: none;
         border-bottom: 1px solid var(--border-color);
