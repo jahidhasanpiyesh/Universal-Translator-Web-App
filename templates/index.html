@@ -155,8 +155,7 @@
                                 {% get_current_language as CURRENT_LANG %}
                                 {% get_available_languages as ALL_LANGS %}
                                 {% for lang_code, lang_name in ALL_LANGS %}
-                                <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANG %}selected{% endif %}>{{
-                                    lang_name }}</option>
+                                <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANG %}selected{% endif %}>{{ lang_name }}</option>
                                 {% endfor %}
                             </select>
                         </form>
@@ -166,8 +165,7 @@
                     {% endif %}
                     <a href="#"><i class="far fa-question-circle me-2"></i>{% trans "Help" %}</a>
                     {% if user.is_authenticated %}
-                    <a href="{% url 'signout' %}" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i>{% trans
-                        "Logout" %}</a>
+                    <a href="{% url 'signout' %}" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i>{% trans "Logout" %}</a>
                     {% else %}
                     <a href="{% url 'signin' %}"><i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}</a>
                     {% endif %}
@@ -214,15 +212,6 @@
             </div>
         </div>
 
-        <!-- <footer class="app-info mt-4 text-center">
-            <p class="text-muted small">
-                {% blocktrans %}
-                <strong>Universal Translator</strong> is a powerful web app built with <strong>Django</strong>. 
-                It provides instant, accurate text translation across 100+ languages.
-                {% endblocktrans %}
-            </p>
-        </footer> -->
-
         <footer class="app-info mt-5 pb-4">
             <div class="container">
                 <div class="footer-content mx-auto text-center py-3 border-top">
@@ -256,8 +245,7 @@
                     </div>
                     <div class="list-group list-group-flush" id="langList">
                         {% for code, name in languages.items %}
-                        <button type="button" class="lang-option" data-code="{{ code }}" data-name="{{ name }}">{{ name
-                            }}</button>
+                        <button type="button" class="lang-option" data-code="{{ code }}" data-name="{{ name }}">{{ name }}</button>
                         {% endfor %}
                     </div>
                 </div>

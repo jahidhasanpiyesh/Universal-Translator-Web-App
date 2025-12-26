@@ -61,22 +61,46 @@ body {
     background: var(--bg-output);
 }
 
-/* Pane Header & Tabs */
+/* --- Visual Balance Fix Starts Here --- */
+
 .pane-header {
-    padding: 8px 16px;
+    padding: 0 16px; /* প্যাডিং অ্যাডজাস্ট করা হয়েছে */
     border-bottom: 1px solid var(--border-color);
-    min-height: 48px;
+    height: 48px; /* ফিক্সড হাইট যাতে দুই পাশ সমান থাকে */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .active-tab {
     color: var(--primary-color);
     font-weight: 500;
     font-size: 14px;
+    height: 48px; /* হেডারের সমান উচ্চতা */
+    display: flex;
+    align-items: center;
     border-bottom: 3px solid var(--primary-color);
-    padding: 12px 4px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-sizing: border-box; /* বর্ডার যাতে উচ্চতা না বাড়ায় */
 }
+
+/* ডান পাশের ড্রপডাউন বাটন ফিক্স */
+.language-select-btn {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 14px; /* বাম পাশের সমান ফন্ট সাইজ */
+    text-transform: uppercase;
+    border: none;
+    background: none;
+    padding: 0 4px;
+    cursor: pointer;
+}
+
+/* --- Visual Balance Fix Ends Here --- */
 
 /* Text Areas */
 .text-input, .text-output {
@@ -124,12 +148,13 @@ body {
 }
 
 .footer-content {
-    max-width: 600px; /* এটি টেক্সটকে দুই পাশে ছড়িয়ে পড়তে দেবে না */
+    max-width: 600px;
+    margin: 0 auto; /* মাঝখানে আনার জন্য */
     line-height: 1.6;
 }
 
 .footer-content p {
-    font-size: 0.95rem; /* সামান্য ছোট ফন্ট যা দেখতে প্রিমিয়াম লাগে */
+    font-size: 0.95rem;
     color: #5f6368 !important;
 }
 
@@ -139,7 +164,7 @@ body {
 }
 
 .border-top {
-    border-top: 1px solid #dadce0 !important; /* হালকা একটি বর্ডার */
+    border-top: 1px solid #dadce0 !important;
 }
 
 @keyframes pulse {
