@@ -1,86 +1,164 @@
 :root {
-    --google-blue: #1a73e8;
+    --primary-color: #1a73e8;
+    --primary-hover: #1765cc;
+    --primary-light: #e8f0fe;
+    --error-red: #d93025;
+    --bg-body: #f1f3f4;
+    --bg-card: #ffffff;
+    --bg-output: #f8f9fa;
+    --text-dark: #202124;
+    --text-muted: #5f6368;
     --border-color: #dadce0;
-    --text-main: #3c4043;
-    --bg-light: #f8f9fa;
+    --shadow-sm: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
 }
 
 body {
-    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-body);
+    font-family: 'Google Sans', Roboto, 'Segoe UI', Arial, sans-serif;
+    color: var(--text-dark);
 }
 
+/* Header */
 .translator-header {
-    padding: 12px 25px;
+    background: var(--bg-card);
+    padding: 12px 24px;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
 }
 
 .logo-area h1 {
-    font-size: 22px;
-    color: #5f6368;
+    font-size: 20px;
+    color: var(--text-muted);
     font-weight: 400;
     margin: 0;
 }
 
+/* Main Card Layout */
 .translator-card {
     display: flex;
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     min-height: 280px;
+    overflow: hidden;
+    margin-top: 20px;
 }
 
 .pane {
     flex: 1;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .input-pane {
     border-right: 1px solid var(--border-color);
-    background: #fff;
 }
 
 .output-pane {
-    background: var(--bg-light);
+    background: var(--bg-output);
 }
 
+/* Pane Header & Tabs */
 .pane-header {
-    padding: 10px 15px;
+    padding: 8px 16px;
     border-bottom: 1px solid var(--border-color);
+    min-height: 48px;
 }
 
 .active-tab {
-    color: var(--google-blue);
+    color: var(--primary-color);
     font-weight: 500;
-    border-bottom: 2px solid var(--google-blue);
-    padding-bottom: 8px;
+    font-size: 14px;
+    border-bottom: 3px solid var(--primary-color);
+    padding: 12px 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.text-input {
+/* Text Areas */
+.text-input, .text-output {
     width: 100%;
-    height: 100%;
+    min-height: 180px;
     border: none;
     padding: 20px;
-    font-size: 22px;
-    resize: none;
+    font-size: 24px;
+    line-height: 1.4;
     outline: none;
 }
 
-.text-output {
-    padding: 20px;
-    font-size: 22px;
-    color: var(--text-main);
+.text-input {
+    resize: none;
+    background: transparent;
 }
 
-@media (max-width: 768px) {
-    .translator-card {
-        flex-direction: column;
-    }
+.placeholder-text {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
 
-    .input-pane {
-        border-right: none;
-        border-bottom: 1px solid var(--border-color);
-    }
+/* Professional Buttons */
+.icon-btn {
+    background: none;
+    border: none;
+    padding: 10px;
+    border-radius: 50%;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover { background-color: rgba(60,64,67,0.08); }
+.hover-primary:hover { color: var(--primary-color); background-color: var(--primary-light); }
+.hover-danger:hover { color: var(--error-red); background-color: #fce8e6; }
+
+/* Recording UI */
+.recording {
+    color: var(--error-red) !important;
+    animation: pulse 1.5s infinite;
+}
+
+.footer-content {
+    max-width: 600px; /* এটি টেক্সটকে দুই পাশে ছড়িয়ে পড়তে দেবে না */
+    line-height: 1.6;
+}
+
+.footer-content p {
+    font-size: 0.95rem; /* সামান্য ছোট ফন্ট যা দেখতে প্রিমিয়াম লাগে */
+    color: #5f6368 !important;
+}
+
+.footer-content strong {
+    color: #3c4043;
+    font-weight: 600;
+}
+
+.border-top {
+    border-top: 1px solid #dadce0 !important; /* হালকা একটি বর্ডার */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Loader */
+#loader {
+    display: none;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .translator-card { flex-direction: column; }
+    .input-pane { border-right: none; border-bottom: 1px solid var(--border-color); }
+    .text-input, .text-output { font-size: 20px; }
 }
