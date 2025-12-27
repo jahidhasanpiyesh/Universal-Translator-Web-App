@@ -119,6 +119,23 @@
             bottom: 20px;
             right: 20px;
         }
+
+        /* --- ফিক্স: আউটপুট বক্স এলাইনমেন্ট --- */
+        .text-output {
+            text-align: left !important;
+            display: flex !important;
+            flex-direction: column;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            min-height: 180px;
+            width: 100%;
+        }
+
+        .placeholder-text {
+            text-align: left !important;
+            width: 100%;
+            display: block;
+        }
     </style>
 </head>
 
@@ -164,9 +181,7 @@
                     <a href="{% url 'profile' %}"><i class="fas fa-user-circle me-2"></i>{% trans "Profile" %}</a>
                     {% endif %}
                     <a href="#"><i class="fas fa-user-shield me-2"></i>{% trans "Privacy & Terms" %}</a>
-
                     <a href="#"><i class="fas fa-question-circle me-2"></i>{% trans "Help" %}</a>
-
                     <a href="#"><i class="fas fa-info-circle me-2"></i>{% trans "About Universal Translator" %}</a>
                     {% if user.is_authenticated %}
                     <a href="{% url 'signout' %}" class="text-danger"><i class="fas fa-sign-out-alt me-2"></i>{% trans "Logout" %}</a>
@@ -209,7 +224,7 @@
                         <i class="far fa-copy"></i>
                     </button>
                 </div>
-                <div class="text-output" id="resultDiv">
+                <div class="text-output" id="resultDiv" style="text-align: left;">
                     <span class="placeholder-text">{% trans "Translation results will appear here" %}</span>
                 </div>
                 <div id="loader" class="spinner-border spinner-border-sm text-primary"></div>
@@ -265,11 +280,16 @@
         const targetLangInput = document.getElementById('targetLangCode');
         const selectedLangNameDisplay = document.getElementById('selectedLangName');
 
-        // Dropdown Menu Toggle
+        function autoResizeInput() {
+            inputArea.style.height = 'auto';
+            inputArea.style.height = inputArea.scrollHeight + 'px';
+        }
+
         function toggleMenu(event) {
             event.stopPropagation();
             document.getElementById("userMenu").classList.toggle("show-dropdown");
         }
+
         window.onclick = (e) => {
             if (!e.target.closest('.user-menu-wrapper')) {
                 document.getElementById("userMenu").classList.remove('show-dropdown');
@@ -284,7 +304,7 @@
             });
         });
 
-        // Language Selection Handler
+        // Language Selection
         const modalEl = document.getElementById('languageModal');
         const bootstrapModal = new bootstrap.Modal(modalEl);
         document.querySelectorAll('.lang-option').forEach(opt => {
@@ -296,21 +316,12 @@
             });
         });
 
-        // Core Translation Function (Updated for Big Text Handling)
         function performTranslation() {
             const text = inputArea.value.trim();
-            
-            // ১. ৫০০০ অক্ষরের বেশি হলে এপিআই কল করার আগেই ইউজারকে মেসেজ দেবে
             if (text.length > 5000) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Text Too Long',
-                    text: 'Your text is too large (over 5000 characters). Please reduce the size for translation.',
-                    confirmButtonColor: '#1a73e8'
-                });
+                Swal.fire({ icon: 'warning', title: 'Text Too Long', text: 'Max 5000 characters allowed.' });
                 return;
             }
-
             if (!text) {
                 outputArea.innerHTML = '<span class="placeholder-text">{% trans "Translation results will appear here" %}</span>';
                 return;
@@ -328,49 +339,35 @@
                 body: JSON.stringify({ 'text': text, 'target': targetLangInput.value })
             })
             .then(res => {
-                // ২. সার্ভার থেকে কোনো এরর আসলে (যেমন বড় টেক্সটের জন্য সার্ভার রিজেক্ট করলে)
-                if (!res.ok) {
-                    throw new Error('Limit exceeded or Server error');
-                }
+                if (!res.ok) throw new Error('Error');
                 return res.json();
             })
             .then(data => {
                 loader.style.display = 'none';
                 outputArea.style.opacity = '1';
-                
                 if (data.translated_text) {
-                    outputArea.innerHTML = `<span style="color:#000;">${data.translated_text}</span>`;
-                } else {
-                    outputArea.innerHTML = "Error during translation";
+                    const formattedText = data.translated_text.replace(/\n/g, '<br>');
+                    // নিশ্চিত করা হচ্ছে টেক্সট বাম দিকে থাকবে এবং কালো রঙ হবে
+                    outputArea.innerHTML = `<div style="text-align:left; color:#000; width:100%;">${formattedText}</div>`;
                 }
             })
-            .catch((error) => {
+            .catch(err => {
                 loader.style.display = 'none';
                 outputArea.style.opacity = '1';
-
-                // ৩. বড় টেক্সট বা নেটওয়ার্ক এররের জন্য ইংরেজি পপ-আপ মেসেজ
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Translation Failed',
-                    text: 'The text is too long or there was a system error. Please try again with a shorter text.',
-                    confirmButtonText: 'Got it!',
-                    confirmButtonColor: '#1a73e8'
-                });
-                
-                console.error('Translation Error:', error);
+                console.error(err);
             });
         }
 
-        // Auto-translate on typing (with debounce)
         let timeout = null;
         inputArea.addEventListener('input', () => {
+            autoResizeInput();
             clearTimeout(timeout);
-            timeout = setTimeout(performTranslation, 80);
+            timeout = setTimeout(performTranslation, 500);
         });
 
-        // Clear and Copy Buttons
         document.getElementById('clearBtn').onclick = () => {
             inputArea.value = '';
+            inputArea.style.height = '180px';
             performTranslation();
         };
 
@@ -382,7 +379,7 @@
             }
         };
 
-        // --- Voice-to-Text Feature ---
+        // Voice feature
         const voiceBtn = document.getElementById('voiceBtn');
         const micIcon = document.getElementById('micIcon');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -390,40 +387,17 @@
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-US';
-            recognition.interimResults = false;
-
             voiceBtn.onclick = () => {
-                if (micIcon.classList.contains('recording')) {
-                    recognition.stop();
-                } else {
-                    recognition.start();
-                }
+                micIcon.classList.contains('recording') ? recognition.stop() : recognition.start();
             };
-
-            recognition.onstart = () => {
-                micIcon.classList.add('recording', 'fa-microphone-alt');
-                micIcon.classList.remove('fa-microphone');
-            };
-
-            recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                inputArea.value = transcript;
+            recognition.onstart = () => micIcon.classList.add('recording', 'fa-microphone-alt');
+            recognition.onresult = (e) => {
+                inputArea.value = e.results[0][0].transcript;
+                autoResizeInput();
                 performTranslation();
             };
-
-            recognition.onerror = (e) => {
-                micIcon.classList.remove('recording');
-                console.error(e.error);
-            };
-
-            recognition.onend = () => {
-                micIcon.classList.remove('recording', 'fa-microphone-alt');
-                micIcon.classList.add('fa-microphone');
-            };
-        } else {
-            voiceBtn.style.display = 'none';
+            recognition.onend = () => micIcon.classList.remove('recording', 'fa-microphone-alt');
         }
     </script>
 </body>
-
 </html>

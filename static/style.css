@@ -105,16 +105,23 @@ body {
 /* Text Areas */
 .text-input, .text-output {
     width: 100%;
-    min-height: 180px;
+    min-height: 180px; /* শুরুর উচ্চতা */
+    height: auto;      /* কন্টেন্ট অনুযায়ী বড় হবে */
     border: none;
     padding: 20px;
     font-size: 24px;
     line-height: 1.4;
     outline: none;
+    overflow: hidden;  /* স্ক্রলবার লুকিয়ে ফেলা হলো */
+    display: block !important;
+    box-sizing: border-box;
+    /* আগের সব কোড থাকবে, শুধু নিচের ২টি লাইন নিশ্চিত করুন */
+    white-space: pre-wrap !important;    /* এটি লাইন ব্রেক এবং স্পেস বজায় রাখবে */
+    word-wrap: break-word;    /* বড় শব্দ হলে ভেঙে দেবে যাতে বক্সের বাইরে না যায় */
 }
 
 .text-input {
-    resize: none;
+    resize: none;      /* ইউজার টেনে বড় করতে পারবে না */
     background: transparent;
 }
 
