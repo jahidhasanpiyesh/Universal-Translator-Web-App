@@ -4,11 +4,10 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-from .models import UserProfile
+from .models import UserProfile, TranslationHistory # যোগ করা হয়েছে
 import json
 from django.http import JsonResponse
 from deep_translator import GoogleTranslator
-
 
 def home(request):
     languages_list = {
@@ -35,7 +34,6 @@ def home(request):
     }
     return render(request, 'index.html', {'languages': languages_list})
 
-
 def translate_text(request):
     if request.method == "POST":
         try:
@@ -46,13 +44,21 @@ def translate_text(request):
             if not user_text:
                 return JsonResponse({'translated_text': ''})
 
-            translated = GoogleTranslator(
-                source='auto', target=target_lang).translate(user_text)
+            translated = GoogleTranslator(source='auto', target=target_lang).translate(user_text)
+
+            # ইতিহাস সেভ করা
+            if request.user.is_authenticated:
+                TranslationHistory.objects.create(
+                    user=request.user,
+                    source_text=user_text,
+                    translated_text=translated,
+                    target_lang=target_lang
+                )
+
             return JsonResponse({'translated_text': translated})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
-
 
 def signin(request):
     if request.method == "POST":
@@ -67,12 +73,10 @@ def signin(request):
             elif User.objects.filter(username=email).exists():
                 messages.error(request, 'User with this email already exists!')
             else:
-                user = User.objects.create_user(
-                    username=email, email=email, password=pass1)
+                user = User.objects.create_user(username=email, email=email, password=pass1)
                 user.first_name = name
                 user.save()
-                messages.success(
-                    request, 'Account created successfully! Please login.')
+                messages.success(request, 'Account created successfully! Please login.')
                 return redirect('signin')
         elif form_type == 'login':
             email = request.POST.get('email')
@@ -86,18 +90,15 @@ def signin(request):
                 messages.error(request, 'Invalid email or password!')
     return render(request, 'signin.html')
 
-
 @login_required
 def signout(request):
     logout(request)
     messages.success(request, 'Logged out succesfully!')
     return redirect('home')
 
-
 @login_required
 def profile(request):
     return render(request, 'profile.html')
-
 
 @login_required
 def profile_edit(request):
@@ -123,8 +124,7 @@ def profile_edit(request):
                 user.set_password(new_pass)
                 user.save()
                 update_session_auth_hash(request, user)
-                messages.success(
-                    request, 'Profile and Password updated successfully!')
+                messages.success(request, 'Profile and Password updated successfully!')
             else:
                 messages.error(request, 'Current password was incorrect!')
                 return render(request, 'profile_edit.html')
@@ -133,8 +133,7 @@ def profile_edit(request):
                 user.save()
                 messages.success(request, 'Profile updated successfully!')
             except Exception:
-                messages.error(
-                    request, 'This email/username is already in use!')
+                messages.error(request, 'This email/username is already in use!')
                 return render(request, 'profile_edit.html')
         return redirect('profile')
     return render(request, 'profile_edit.html')

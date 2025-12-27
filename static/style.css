@@ -16,6 +16,7 @@ body {
     background-color: var(--bg-body);
     font-family: 'Google Sans', Roboto, 'Segoe UI', Arial, sans-serif;
     color: var(--text-dark);
+    margin: 0;
 }
 
 /* Header */
@@ -61,12 +62,11 @@ body {
     background: var(--bg-output);
 }
 
-/* --- Visual Balance Fix Starts Here --- */
-
+/* Pane Header & Active Tabs */
 .pane-header {
-    padding: 0 16px; /* প্যাডিং অ্যাডজাস্ট করা হয়েছে */
+    padding: 0 16px;
     border-bottom: 1px solid var(--border-color);
-    height: 48px; /* ফিক্সড হাইট যাতে দুই পাশ সমান থাকে */
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -76,23 +76,22 @@ body {
     color: var(--primary-color);
     font-weight: 500;
     font-size: 14px;
-    height: 48px; /* হেডারের সমান উচ্চতা */
+    height: 48px;
     display: flex;
     align-items: center;
     border-bottom: 3px solid var(--primary-color);
     text-transform: capitalize;
     letter-spacing: 0.5px;
-    box-sizing: border-box; /* বর্ডার যাতে উচ্চতা না বাড়ায় */
+    box-sizing: border-box;
 }
 
-/* ডান পাশের ড্রপডাউন বাটন ফিক্স */
 .language-select-btn {
     height: 48px;
     display: flex;
     align-items: center;
     color: var(--primary-color);
     font-weight: 500;
-    font-size: 14px; /* বাম পাশের সমান ফন্ট সাইজ */
+    font-size: 14px;
     text-transform: capitalize;
     border: none;
     background: none;
@@ -100,28 +99,25 @@ body {
     cursor: pointer;
 }
 
-/* --- Visual Balance Fix Ends Here --- */
-
 /* Text Areas */
 .text-input, .text-output {
     width: 100%;
-    min-height: 180px; /* শুরুর উচ্চতা */
-    height: auto;      /* কন্টেন্ট অনুযায়ী বড় হবে */
+    min-height: 180px;
+    height: auto;
     border: none;
     padding: 20px;
     font-size: 24px;
     line-height: 1.4;
     outline: none;
-    overflow: hidden;  /* স্ক্রলবার লুকিয়ে ফেলা হলো */
+    overflow: hidden;
     display: block !important;
     box-sizing: border-box;
-    /* আগের সব কোড থাকবে, শুধু নিচের ২টি লাইন নিশ্চিত করুন */
-    white-space: pre-wrap !important;    /* এটি লাইন ব্রেক এবং স্পেস বজায় রাখবে */
-    word-wrap: break-word;    /* বড় শব্দ হলে ভেঙে দেবে যাতে বক্সের বাইরে না যায় */
+    white-space: pre-wrap !important;
+    word-wrap: break-word;
 }
 
 .text-input {
-    resize: none;      /* ইউজার টেনে বড় করতে পারবে না */
+    resize: none;
     background: transparent;
 }
 
@@ -130,7 +126,7 @@ body {
     opacity: 0.6;
 }
 
-/* Professional Buttons */
+/* Icons & Buttons */
 .icon-btn {
     background: none;
     border: none;
@@ -154,30 +150,88 @@ body {
     animation: pulse 1.5s infinite;
 }
 
-.footer-content {
-    max-width: 600px;
-    margin: 0 auto; /* মাঝখানে আনার জন্য */
-    line-height: 1.6;
-}
-
-.footer-content p {
-    font-size: 0.95rem;
-    color: #5f6368 !important;
-}
-
-.footer-content strong {
-    color: #3c4043;
-    font-weight: 600;
-}
-
-.border-top {
-    border-top: 1px solid #dadce0 !important;
-}
-
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.1); opacity: 0.8; }
     100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Footer & Big History Icon Styling --- */
+
+.app-info {
+    border-top: 1px solid var(--border-color);
+    margin-top: 50px;
+}
+
+.footer-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex; /* বামে টেক্সট এবং ডানে বাটন রাখার জন্য */
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+}
+
+.footer-text-area {
+    text-align: left;
+    max-width: 70%;
+}
+
+.footer-text-area p {
+    font-size: 0.95rem;
+    color: var(--text-muted) !important;
+    margin-bottom: 5px;
+    line-height: 1.6;
+}
+
+.footer-text-area strong {
+    color: #3c4043;
+    font-weight: 600;
+}
+
+/* বড় হিস্ট্রি বাটন */
+.big-history-btn {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--primary-color);
+    border-radius: 12px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.big-history-btn i {
+    font-size: 26px; /* আইকনটি বড় করা হয়েছে */
+}
+
+.big-history-btn span {
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.big-history-btn:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+}
+
+/* সাইডবার আইটেম স্টাইল */
+.history-item {
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all 0.2s;
+}
+
+.history-item:hover {
+    background-color: var(--primary-light);
+    border-left-color: var(--primary-color);
 }
 
 /* Loader */
@@ -193,4 +247,20 @@ body {
     .translator-card { flex-direction: column; }
     .input-pane { border-right: none; border-bottom: 1px solid var(--border-color); }
     .text-input, .text-output { font-size: 20px; }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .footer-text-area {
+        max-width: 100%;
+        text-align: center;
+    }
+    
+    .big-history-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }

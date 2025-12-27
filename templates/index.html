@@ -136,6 +136,17 @@
             width: 100%;
             display: block;
         }
+
+        /* নতুন হিস্ট্রি আইটেম স্টাইল */
+        .history-item {
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: 0.2s;
+        }
+        .history-item:hover {
+            border-left-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 
@@ -234,19 +245,48 @@
         <footer class="app-info mt-5 pb-4">
             <div class="container">
                 <div class="footer-content mx-auto text-center py-3 border-top">
-                    <p class="text-muted mb-0">
+                    <p class="text-muted mb-0 d-inline-block">
                         {% blocktrans %}
                         <strong>Universal Translator</strong> — a professional <strong>Django</strong> web app offering
                         instant <strong>text & voice</strong> translation in 100+ languages via Google API.
                         {% endblocktrans %}
                     </p>
+                    
+                    <button class="btn btn-link text-primary p-0 ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#historySidebar" title="View History">
+                        <i class="fas fa-history" style="font-size: 1.2rem; vertical-align: middle;"></i>
+                    </button>
+
                     <div class="mt-2 small text-secondary opacity-75">
                         © 2025 Universal Translator. All rights reserved.
                     </div>
                 </div>
             </div>
         </footer>
+        
     </main>
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="historySidebar" aria-labelledby="historySidebarLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold" id="historySidebarLabel"><i class="fas fa-history me-2"></i>{% trans "Translation History" %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush" id="historyItemsList">
+                {% if user.is_authenticated %}
+                    {% for item in user.translations.all|slice:":20" %}
+                    <div class="list-group-item history-item py-3" onclick="loadHistory('{{ item.source_text|escapejs }}', '{{ item.translated_text|escapejs }}', '{{ item.target_lang }}')">
+                        <p class="mb-1 text-dark small text-truncate"><strong>In:</strong> {{ item.source_text }}</p>
+                        <p class="mb-0 text-primary small text-truncate"><strong>Out:</strong> {{ item.translated_text }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted small">{% trans "Please sign in to view history." %}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="languageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -316,6 +356,19 @@
             });
         });
 
+        // নতুন ফাংশন: ইতিহাস লোড করা
+        function loadHistory(source, translated, langCode) {
+            inputArea.value = source;
+            const formattedText = translated.replace(/\n/g, '<br>');
+            outputArea.innerHTML = `<div style="text-align:left; color:#000; width:100%;">${formattedText}</div>`;
+            targetLangInput.value = langCode;
+            autoResizeInput();
+            
+            // সাইডবার বন্ধ করা
+            const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('historySidebar'));
+            if(sidebar) sidebar.hide();
+        }
+
         function performTranslation() {
             const text = inputArea.value.trim();
             if (text.length > 5000) {
@@ -347,7 +400,6 @@
                 outputArea.style.opacity = '1';
                 if (data.translated_text) {
                     const formattedText = data.translated_text.replace(/\n/g, '<br>');
-                    // নিশ্চিত করা হচ্ছে টেক্সট বাম দিকে থাকবে এবং কালো রঙ হবে
                     outputArea.innerHTML = `<div style="text-align:left; color:#000; width:100%;">${formattedText}</div>`;
                 }
             })
