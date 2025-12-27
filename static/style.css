@@ -80,7 +80,7 @@ body {
     display: flex;
     align-items: center;
     border-bottom: 3px solid var(--primary-color);
-    text-transform: uppercase;
+    text-transform: capitalize;
     letter-spacing: 0.5px;
     box-sizing: border-box; /* বর্ডার যাতে উচ্চতা না বাড়ায় */
 }
@@ -93,7 +93,7 @@ body {
     color: var(--primary-color);
     font-weight: 500;
     font-size: 14px; /* বাম পাশের সমান ফন্ট সাইজ */
-    text-transform: uppercase;
+    text-transform: capitalize;
     border: none;
     background: none;
     padding: 0 4px;
