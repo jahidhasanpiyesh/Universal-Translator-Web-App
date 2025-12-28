@@ -11,10 +11,10 @@
 
 | | | |
 | :---: | :---: | :---: |
-| ![Screen 1](img/1.png) <br> **Landing Page** | ![Screen 2](img/2.png) <br> **Features List** | ![Screen 3](img/3.png) <br> **Login UI** |
-| ![Screen 4](img/4.png) <br> **Sign Up** | ![Screen 5](img/5.png) <br> **User Dashboard** | ![Screen 6](img/6.png) <br> **Language Selection** |
-| ![Screen 7](img/7.png) <br> **Translation View** | ![Screen 8](img/8.png) <br> **Voice Input** | ![Screen 9](img/9.png) <br> **Settings** |
-| ![Screen 10](img/10.png) <br> **Profile** | ![Screen 10](img/11.png) | |
+| ![Screen 1](img/1.png) <br> **Landing Page** | ![Screen 2](img/2.png) <br> **Features List** | ![Screen 3](img/3.png) <br> **Language Selection** |
+| ![Screen 4](img/4.png) <br> **Sign Up** | ![Screen 5](img/5.png) <br> **Login UI** | ![Screen 6](img/6.png) <br> **Features List** |
+| ![Screen 7](img/7.png) <br> **Profile** | ![Screen 8](img/8.png) <br> **Profile Edit** | ![Screen 9](img/9.png) <br> **Language Selection** |
+| ![Screen 10](img/10.png) <br> **Select Language** | ![Screen 10](img/11.png) **History**| |
 
 
 
