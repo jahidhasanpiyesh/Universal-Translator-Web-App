@@ -18,7 +18,7 @@
 
 
 
-**Live Demo:** [Click here to view live](https://connectx.pythonanywhere.com/)
+**Live Demo:** [Click here to view live](https://universaltranslator.pythonanywhere.com/)
 
 ---
 ## ✨ Key Features
