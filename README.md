@@ -7,7 +7,20 @@
 **Universal Translator** is an enterprise-grade translation platform developed with **Django**. It offers real-time text and voice translation for over 100 languages. Designed with high-security standards and performance optimization, this app features a persistent history system, profile management, and a seamless asynchronous UI.
 
 ---
+## Screenshots
 
+| | | |
+| :---: | :---: | :---: |
+| ![Screen 1](img/1.png) <br> **Landing Page** | ![Screen 2](./2.png) <br> **Features List** | ![Screen 3](./3.png) <br> **Login UI** |
+| ![Screen 4](./4.png) <br> **Sign Up** | ![Screen 5](./5.png) <br> **User Dashboard** | ![Screen 6](./6.png) <br> **Language Selection** |
+| ![Screen 7](./7.png) <br> **Translation View** | ![Screen 8](./8.png) <br> **Voice Input** | ![Screen 9](./9.png) <br> **Settings** |
+| ![Screen 10](./10.png) <br> **Profile** | | |
+
+
+
+**Live Demo:** [Click here to view live](https://connectx.pythonanywhere.com/)
+
+---
 ## ✨ Key Features
 
 * **⚡ Real-time Translation:** Asynchronous Fetch API architecture for instant results without refreshing.
