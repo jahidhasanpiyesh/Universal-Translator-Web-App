@@ -155,3 +155,12 @@ def profile_edit(request):
             return render(request, 'profile_edit.html')
 
     return render(request, 'profile_edit.html')
+
+def privacy_view(request):
+    return render(request, 'privacy.html')
+
+def help_view(request):
+    return render(request, 'help.html')
+
+def about_view(request):
+    return render(request, 'about.html')

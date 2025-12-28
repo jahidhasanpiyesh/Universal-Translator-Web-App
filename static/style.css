@@ -33,6 +33,7 @@ body {
     color: var(--text-muted);
     font-weight: 400;
     margin: 0;
+    font-weight: bold;
 }
 
 /* Main Card Layout */
