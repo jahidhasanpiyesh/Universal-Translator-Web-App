@@ -1,17 +1,28 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin
+from .models import UserProfile, TranslationHistory
 
-# 1. Age default User registration-ti bad dite hobe
-admin.site.unregister(User)
+# ১. প্রোফাইল এডমিন প্যানেলে দেখার জন্য
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'image') # প্যানেলের লিস্টে যা যা দেখাবে
+    search_fields = ('user__username', 'user__email') # সার্চ করার অপশন
 
-# 2. Ekhon apnar custom admin class-ti likhun
-@admin.register(User)
-class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'first_name', 'is_staff', 'is_active')
-    search_fields = ('username', 'email', 'first_name')
-    ordering = ('username',)
-    list_filter = ('is_staff', 'is_superuser', 'is_active')
-    readonly_fields = ('date_joined', 'last_login')
+# ২. ট্রান্সলেশন হিস্ট্রি এডমিন প্যানেলে দেখার জন্য
+@admin.register(TranslationHistory)
+class TranslationHistoryAdmin(admin.ModelAdmin):
+    # লিস্টে যা যা কলাম হিসেবে দেখাবে
+    list_display = ('user', 'source_text_short', 'target_lang', 'created_at')
+    
+    # ডানপাশে ফিল্টার করার অপশন (যেমন: ল্যাঙ্গুয়েজ বা তারিখ অনুযায়ী)
+    list_filter = ('target_lang', 'created_at', 'user')
+    
+    # সার্চ বার (ইউজারনেম বা টেক্সট দিয়ে খোঁজার জন্য)
+    search_fields = ('user__username', 'source_text', 'translated_text')
+    
+    # ডেট অনুযায়ী নেভিগেশন
+    date_hierarchy = 'created_at'
 
-    # Password field handle korar jonno fieldsets use kora hoy (Optional but good)
+    # বড় টেক্সটকে ছোট করে দেখানোর জন্য একটি ফাংশন
+    def source_text_short(self, obj):
+        return obj.source_text[:50] + "..." if len(obj.source_text) > 50 else obj.source_text
+    source_text_short.short_description = 'Source Text'

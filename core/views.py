@@ -4,11 +4,12 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
-from .models import UserProfile, TranslationHistory # যোগ করা হয়েছে
+from .models import UserProfile, TranslationHistory 
 import json
 from django.http import JsonResponse
 from deep_translator import GoogleTranslator
 
+# ল্যাঙ্গুয়েজ লিস্টটি হোমে রেন্ডার করার জন্য
 def home(request):
     languages_list = {
         'af': 'Afrikaans', 'sq': 'Albanian', 'ar': 'Arabic', 'hy': 'Armenian', 'az': 'Azerbaijani',
@@ -34,6 +35,7 @@ def home(request):
     }
     return render(request, 'index.html', {'languages': languages_list})
 
+# API যা জাভাস্ক্রিপ্ট থেকে রিকোয়েস্ট গ্রহণ করবে
 def translate_text(request):
     if request.method == "POST":
         try:
@@ -46,7 +48,7 @@ def translate_text(request):
 
             translated = GoogleTranslator(source='auto', target=target_lang).translate(user_text)
 
-            # ইতিহাস সেভ করা
+            # লগইন করা থাকলে ইতিহাস সেভ হবে
             if request.user.is_authenticated:
                 TranslationHistory.objects.create(
                     user=request.user,
@@ -68,6 +70,7 @@ def signin(request):
             email = request.POST.get('email')
             pass1 = request.POST.get('password')
             pass2 = request.POST.get('re_password')
+            
             if pass1 != pass2:
                 messages.error(request, "Passwords do not match!")
             elif User.objects.filter(username=email).exists():
@@ -78,6 +81,7 @@ def signin(request):
                 user.save()
                 messages.success(request, 'Account created successfully! Please login.')
                 return redirect('signin')
+                
         elif form_type == 'login':
             email = request.POST.get('email')
             password = request.POST.get('password')
@@ -93,7 +97,7 @@ def signin(request):
 @login_required
 def signout(request):
     logout(request)
-    messages.success(request, 'Logged out succesfully!')
+    messages.success(request, 'Logged out successfully!')
     return redirect('home')
 
 @login_required
@@ -104,36 +108,50 @@ def profile(request):
 def profile_edit(request):
     user = request.user
     profile, created = UserProfile.objects.get_or_create(user=user)
+    
     if request.method == "POST":
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
         profile_pic = request.FILES.get('profile_pic')
+        
         if not full_name or not email:
             messages.error(request, 'Full Name and Email are required!')
             return render(request, 'profile_edit.html')
-        user.first_name = full_name
-        user.email = email
-        user.username = email
-        if profile_pic:
-            profile.image = profile_pic
-            profile.save()
+
+        # পাসওয়ার্ড পরিবর্তন লজিক
         current_pass = request.POST.get('current_password')
         new_pass = request.POST.get('new_password')
+        
+        password_changed = False
         if current_pass and new_pass:
             if user.check_password(current_pass):
                 user.set_password(new_pass)
-                user.save()
-                update_session_auth_hash(request, user)
-                messages.success(request, 'Profile and Password updated successfully!')
+                password_changed = True
             else:
                 messages.error(request, 'Current password was incorrect!')
                 return render(request, 'profile_edit.html')
-        else:
-            try:
-                user.save()
+
+        # সাধারণ তথ্য আপডেট
+        try:
+            user.first_name = full_name
+            user.email = email
+            user.username = email # যেহেতু আপনি ইমেইলকে ইউজারনেম হিসেবে ব্যবহার করছেন
+            user.save()
+            
+            if profile_pic:
+                profile.image = profile_pic
+            profile.save()
+
+            if password_changed:
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Profile and Password updated successfully!')
+            else:
                 messages.success(request, 'Profile updated successfully!')
-            except Exception:
-                messages.error(request, 'This email/username is already in use!')
-                return render(request, 'profile_edit.html')
-        return redirect('profile')
+            
+            return redirect('profile')
+            
+        except Exception as e:
+            messages.error(request, 'This email is already in use by another account!')
+            return render(request, 'profile_edit.html')
+
     return render(request, 'profile_edit.html')

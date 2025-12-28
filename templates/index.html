@@ -14,157 +14,43 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 
     <style>
-        /* Internal UI Enhancements */
-        .user-menu-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-right: 15px;
-        }
-
-        .menu-trigger-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-        }
-
-        .menu-trigger-btn:hover {
-            opacity: 0.7;
-        }
-
-        .dropdown-panel {
-            display: none;
-            position: absolute;
-            top: 45px;
-            left: 0;
-            background-color: #ffffff;
-            min-width: 240px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            z-index: 1050;
-            padding: 10px 0;
-        }
-
-        .show-dropdown {
-            display: block !important;
-        }
-
-        .dropdown-panel a {
-            color: #3c4043 !important;
-            padding: 10px 20px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .dropdown-panel a:hover {
-            background-color: #f1f3f4;
-        }
-
-        .lang-form {
-            padding: 10px 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .lang-form select {
-            width: 100%;
-            padding: 5px;
-            border-radius: 4px;
-            border: 1px solid #dadce0;
-            font-size: 13px;
-        }
-
-        .language-select-btn {
-            color: #1a73e8;
-            font-weight: 500;
-            font-size: 16px;
-            border: none;
-            background: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-        }
-
-        .language-select-btn:hover {
-            background-color: #e8f0fe;
-        }
-
-        #langList {
-            max-height: 350px;
-            overflow-y: auto;
-        }
-
-        .lang-option {
-            border: none;
-            padding: 10px 20px;
-            text-align: left;
-            width: 100%;
-            background: none;
-            transition: 0.2s;
-            font-size: 14px;
-        }
-
-        .lang-option:hover {
-            background-color: #e8f0fe;
-            color: #1a73e8;
-        }
-
-        #loader {
-            display: none;
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-        }
-
-        /* --- ফিক্স: আউটপুট বক্স এলাইনমেন্ট --- */
-        .text-output {
-            text-align: left !important;
-            display: flex !important;
-            flex-direction: column;
-            justify-content: flex-start !important;
-            align-items: flex-start !important;
-            min-height: 180px;
-            width: 100%;
-        }
-
-        .placeholder-text {
-            text-align: left !important;
-            width: 100%;
-            display: block;
-        }
-
-        /* নতুন হিস্ট্রি আইটেম স্টাইল */
-        .history-item {
-            cursor: pointer;
-            border-left: 4px solid transparent;
-            transition: 0.2s;
-        }
-        .history-item:hover {
-            border-left-color: #1a73e8;
-            background-color: #f8f9fa;
-        }
+        .user-menu-wrapper { position: relative; display: inline-block; margin-right: 15px; }
+        .menu-trigger-btn { background: none; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; transition: 0.3s; }
+        .menu-trigger-btn:hover { opacity: 0.7; }
+        .dropdown-panel { display: none; position: absolute; top: 45px; left: 0; background-color: #ffffff; min-width: 240px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); z-index: 1050; padding: 10px 0; }
+        .show-dropdown { display: block !important; }
+        .dropdown-panel a { color: #3c4043 !important; padding: 10px 20px; text-decoration: none; display: block; font-size: 14px; font-weight: 500; }
+        .dropdown-panel a:hover { background-color: #f1f3f4; }
+        .lang-form { padding: 10px 20px; border-bottom: 1px solid #eee; }
+        .lang-form select { width: 100%; padding: 5px; border-radius: 4px; border: 1px solid #dadce0; font-size: 13px; }
+        .language-select-btn { color: #1a73e8; font-weight: 500; font-size: 16px; border: none; background: none; padding: 5px 10px; border-radius: 4px; }
+        .language-select-btn:hover { background-color: #e8f0fe; }
+        #langList { max-height: 350px; overflow-y: auto; }
+        .lang-option { border: none; padding: 10px 20px; text-align: left; width: 100%; background: none; transition: 0.2s; font-size: 14px; }
+        .lang-option:hover { background-color: #e8f0fe; color: #1a73e8; }
+        #loader { display: none; position: absolute; bottom: 20px; right: 20px; }
+        .text-output { text-align: left !important; display: flex !important; flex-direction: column; justify-content: flex-start !important; align-items: flex-start !important; min-height: 180px; width: 100%; }
+        .placeholder-text { text-align: left !important; width: 100%; display: block; }
+        .history-item { cursor: pointer; border-left: 4px solid transparent; transition: 0.2s; }
+        .history-item:hover { border-left-color: #1a73e8; background-color: #f8f9fa; }
     </style>
 </head>
 
 <body>
-    <header class="translator-header">
+    {% csrf_token %} <header class="translator-header">
         {% if messages %}
-        {% for message in messages %}
-        <script>
-            Swal.fire({
-                icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
-                title: "{{ message }}",
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        </script>
-        {% endfor %}
+            {% for message in messages %}
+            <script>
+                Swal.fire({
+                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
+                    title: "{{ message }}",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            </script>
+            {% endfor %}
         {% endif %}
 
         <div class="logo-area d-flex align-items-center">
@@ -235,7 +121,8 @@
                         <i class="far fa-copy"></i>
                     </button>
                 </div>
-                <div class="text-output" id="resultDiv" style="text-align: left;">
+                <div class="text-output" id="resultDiv" 
+                     data-placeholder="{% trans 'Translation results will appear here' %}" style="text-align: left;">
                     <span class="placeholder-text">{% trans "Translation results will appear here" %}</span>
                 </div>
                 <div id="loader" class="spinner-border spinner-border-sm text-primary"></div>
@@ -243,32 +130,27 @@
         </div>
 
         <footer class="app-info mt-5 pb-4">
-            <div class="container">
-                <div class="footer-content mx-auto text-center py-3 border-top">
-                    <p class="text-muted mb-0 d-inline-block">
-                        {% blocktrans %}
-                        <strong>Universal Translator</strong> — a professional <strong>Django</strong> web app offering
-                        instant <strong>text & voice</strong> translation in 100+ languages via Google API.
-                        {% endblocktrans %}
-                    </p>
-                    
-                    <button class="btn btn-link text-primary p-0 ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#historySidebar" title="View History">
-                        <i class="fas fa-history" style="font-size: 1.2rem; vertical-align: middle;"></i>
-                    </button>
-
-                    <div class="mt-2 small text-secondary opacity-75">
-                        © 2025 Universal Translator. All rights reserved.
-                    </div>
-                </div>
+            <div class="container text-center py-3 border-top">
+                <p class="text-muted mb-0 d-inline-block">
+                    {% blocktrans %}
+                    <strong>Universal Translator</strong> — a professional web app offering
+                        instant <strong>text & voice</strong> translation in 100+ languages.
+                    {% endblocktrans %}
+                </p>
+                <button class="btn btn-link text-primary p-0 ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#historySidebar">
+                    <i class="fas fa-history"></i>
+                </button> <br>
+                <span class="badge rounded-pill bg-white text-dark border shadow-sm px-3 py-2">
+                    <i class="fas fa-code text-primary me-1"></i> 
+                    Developed by <strong>@Md Jahid Hasan</strong> </span> 
             </div>
         </footer>
-        
     </main>
 
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="historySidebar" aria-labelledby="historySidebarLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="historySidebar">
         <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title fw-bold" id="historySidebarLabel"><i class="fas fa-history me-2"></i>{% trans "Translation History" %}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <h5 class="offcanvas-title fw-bold">{% trans "Translation History" %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush" id="historyItemsList">
@@ -280,29 +162,19 @@
                     </div>
                     {% endfor %}
                 {% else %}
-                    <div class="p-4 text-center">
-                        <p class="text-muted small">{% trans "Please sign in to view history." %}</p>
-                    </div>
+                    <p class="p-4 text-center">{% trans "Please sign in to view history." %}</p>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="languageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="languageModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold">{% trans "Select Target Language" %}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+            <div class="modal-content">
+                <div class="modal-header"><h5>{% trans "Select Language" %}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
                 <div class="modal-body">
-                    <div class="input-group mb-3 sticky-top bg-white pt-1">
-                        <span class="input-group-text bg-light border-end-0"><i
-                                class="fas fa-search text-muted"></i></span>
-                        <input type="text" id="langSearchInput" class="form-control border-start-0 shadow-none"
-                            placeholder="Search language...">
-                    </div>
-                    <div class="list-group list-group-flush" id="langList">
+                    <input type="text" id="langSearchInput" class="form-control mb-3" placeholder="Search...">
+                    <div id="langList">
                         {% for code, name in languages.items %}
                         <button type="button" class="lang-option" data-code="{{ code }}" data-name="{{ name }}">{{ name }}</button>
                         {% endfor %}
@@ -313,143 +185,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const inputArea = document.getElementById('sourceTextArea');
-        const outputArea = document.getElementById('resultDiv');
-        const loader = document.getElementById('loader');
-        const targetLangInput = document.getElementById('targetLangCode');
-        const selectedLangNameDisplay = document.getElementById('selectedLangName');
-
-        function autoResizeInput() {
-            inputArea.style.height = 'auto';
-            inputArea.style.height = inputArea.scrollHeight + 'px';
-        }
-
-        function toggleMenu(event) {
-            event.stopPropagation();
-            document.getElementById("userMenu").classList.toggle("show-dropdown");
-        }
-
-        window.onclick = (e) => {
-            if (!e.target.closest('.user-menu-wrapper')) {
-                document.getElementById("userMenu").classList.remove('show-dropdown');
-            }
-        }
-
-        // Language Search Filter
-        document.getElementById('langSearchInput').addEventListener('input', function () {
-            const filter = this.value.toLowerCase();
-            document.querySelectorAll('.lang-option').forEach(opt => {
-                opt.style.display = opt.textContent.toLowerCase().includes(filter) ? "block" : "none";
-            });
-        });
-
-        // Language Selection
-        const modalEl = document.getElementById('languageModal');
-        const bootstrapModal = new bootstrap.Modal(modalEl);
-        document.querySelectorAll('.lang-option').forEach(opt => {
-            opt.addEventListener('click', function () {
-                targetLangInput.value = this.dataset.code;
-                selectedLangNameDisplay.innerText = this.dataset.name;
-                bootstrapModal.hide();
-                performTranslation();
-            });
-        });
-
-        // নতুন ফাংশন: ইতিহাস লোড করা
-        function loadHistory(source, translated, langCode) {
-            inputArea.value = source;
-            const formattedText = translated.replace(/\n/g, '<br>');
-            outputArea.innerHTML = `<div style="text-align:left; color:#000; width:100%;">${formattedText}</div>`;
-            targetLangInput.value = langCode;
-            autoResizeInput();
-            
-            // সাইডবার বন্ধ করা
-            const sidebar = bootstrap.Offcanvas.getInstance(document.getElementById('historySidebar'));
-            if(sidebar) sidebar.hide();
-        }
-
-        function performTranslation() {
-            const text = inputArea.value.trim();
-            if (text.length > 5000) {
-                Swal.fire({ icon: 'warning', title: 'Text Too Long', text: 'Max 5000 characters allowed.' });
-                return;
-            }
-            if (!text) {
-                outputArea.innerHTML = '<span class="placeholder-text">{% trans "Translation results will appear here" %}</span>';
-                return;
-            }
-
-            loader.style.display = 'block';
-            outputArea.style.opacity = '0.5';
-
-            fetch('/translate-api/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ 'text': text, 'target': targetLangInput.value })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error('Error');
-                return res.json();
-            })
-            .then(data => {
-                loader.style.display = 'none';
-                outputArea.style.opacity = '1';
-                if (data.translated_text) {
-                    const formattedText = data.translated_text.replace(/\n/g, '<br>');
-                    outputArea.innerHTML = `<div style="text-align:left; color:#000; width:100%;">${formattedText}</div>`;
-                }
-            })
-            .catch(err => {
-                loader.style.display = 'none';
-                outputArea.style.opacity = '1';
-                console.error(err);
-            });
-        }
-
-        let timeout = null;
-        inputArea.addEventListener('input', () => {
-            autoResizeInput();
-            clearTimeout(timeout);
-            timeout = setTimeout(performTranslation, 500);
-        });
-
-        document.getElementById('clearBtn').onclick = () => {
-            inputArea.value = '';
-            inputArea.style.height = '180px';
-            performTranslation();
-        };
-
-        document.getElementById('copyBtn').onclick = () => {
-            const textToCopy = outputArea.innerText;
-            if (textToCopy && !textToCopy.includes('Translation results')) {
-                navigator.clipboard.writeText(textToCopy);
-                Swal.fire({ title: 'Copied!', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, icon: 'success' });
-            }
-        };
-
-        // Voice feature
-        const voiceBtn = document.getElementById('voiceBtn');
-        const micIcon = document.getElementById('micIcon');
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            voiceBtn.onclick = () => {
-                micIcon.classList.contains('recording') ? recognition.stop() : recognition.start();
-            };
-            recognition.onstart = () => micIcon.classList.add('recording', 'fa-microphone-alt');
-            recognition.onresult = (e) => {
-                inputArea.value = e.results[0][0].transcript;
-                autoResizeInput();
-                performTranslation();
-            };
-            recognition.onend = () => micIcon.classList.remove('recording', 'fa-microphone-alt');
-        }
-    </script>
+    <script src="{% static 'app.js' %}"></script>
 </body>
 </html>
